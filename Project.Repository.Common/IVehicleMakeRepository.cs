@@ -5,12 +5,13 @@ using System.Text;
 using System.Threading.Tasks;
 using Project.Model.Common;
 using Project.DAL;
+using Project.Common;
 
 namespace Project.Repository.Common
 {
    public interface IVehicleMakeRepository
     {
-        Task<IEnumerable<IVehicleMake>> GetAsync();         //get VehicleMake
+        Task<IEnumerable<IVehicleMake>> GetAsync(IFilter filter = null);         //get VehicleMake
 
         Task<IVehicleMake> GetByMakeIDAsync(Guid MakeID);     //getVehicleMake by ID
 

@@ -9,6 +9,8 @@ using Project.Model.Common;
 using Project.Repository.Common;
 using AutoMapper;
 using System.Data.Entity;
+using Project.Common;
+using System.Linq.Expressions;
 
 namespace Project.Repository
 {
@@ -21,9 +23,27 @@ namespace Project.Repository
             this.Repository = repository;
         }
 
-        public virtual async Task<IEnumerable<IVehicleMake>> GetAsync()
+        public virtual async Task<IEnumerable<IVehicleMake>> GetAsync(IFilter filter = null)
         {
-            return Mapper.Map<IEnumerable<VehicleMake>>(await Repository.Table<VehicleMake>().ToListAsync());
+            if (filter != null)
+            {
+                var vehicles = Mapper.Map<IEnumerable<VehicleMake>>(
+                    await Repository.Table<VehicleMake>()
+                    .OrderBy(m => m.MakeName)
+                    .ToListAsync());
+
+                if (!string.IsNullOrWhiteSpace(filter.SearchVehicle))
+                {
+                    vehicles = vehicles.Where(m => m.MakeName.ToUpper()
+                    .Contains(filter.SearchVehicle.ToUpper()))
+                    .ToList();
+                }
+                return vehicles;
+            }
+            else
+            {
+                return Mapper.Map<IEnumerable<VehicleMake>>(await Repository.Table<VehicleMake>().ToListAsync());
+            }
         }
 
         public virtual async Task<IVehicleMake> GetByMakeIDAsync(Guid MakeID)
@@ -47,3 +67,4 @@ namespace Project.Repository
         }
     }
 }
+
