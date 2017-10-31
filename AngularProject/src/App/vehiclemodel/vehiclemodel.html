@@ -1,0 +1,92 @@
+﻿<div class="wrapper" ng-controller="ModelController">
+    <!-- table of vehiclemodel -->
+    <div ng-if="vm.showModelTable">
+        <p>
+            <span class="searchbox">
+                <input type="text" ng-model="vm.searchTerm" placeholder="SearchName" class="form-control" />
+            </span>
+            <button ng-click="vm.get()" class="button-control">Search</button>
+        </p>
+
+        <table class="table" align="center">
+            <thead>
+                <tr>
+                    <th>ModelName</th>
+                    <th>ModelAbrv</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tr ng-repeat="model in vm.models">
+                <td>{{model.ModelName}}</td>
+                <td>{{model.ModelAbrv}}</td>
+                <td>
+
+                    <button class="button-control" title="Update" ng-click="vm.showEditModelView(model)">Update</button>
+                    | <button class="button-control" title="Delete" ng-click="vm.showModelDetails(model)">Delete</button>
+                </td>
+
+            </tr>
+
+
+
+        </table>
+
+    </div>
+
+    <!-- Add vehiclemodel -->
+    <div ng-if="showAddModel" class="form-horizontal">
+        <div class="form-group">
+            <label class="control-label">ModelName</label>
+            <div>
+                <input type="text" ng-model="vm.newItem.ModelName" class="form-control" />
+            </div>
+
+            <div class="form-group">
+                <label class="control-label">ModelAbrv</label>
+                <div>
+                    <input type="text" ng-model="vm.newItem.ModelAbrv" class="form-control" />
+                </div>
+            </div>
+            <button ng-click="vm.postModel(vm.newItem)" title="Add" class="button-control">Add</button>
+            | <button ng-click="vm.showModelTable()" title="Back" class="back-control">Back on list</button>
+        </div>
+    </div>
+
+    <!-- Edit vehiclemodel -->
+
+    <div ng-if="vm.showEditModel" class="form-horizontal">
+        <div class="form-group">
+            <label class="control-label">ModelName</label>
+            <div>
+                <input type="text" ng-model="vm.selected.ModelName" class="form-control" />
+            </div>
+
+            <div class="form-group">
+                <label class="control-label">ModelAbrv</label>
+                <div>
+                    <input type="text" ng-model="vm.selected.ModelAbrv" class="form-control" />
+                </div>
+            </div>
+            <button ng-click="vm.updateModel(vm.selected)" title="Edit" class="button-control">Edit</button>
+            | <button ng-click="vm.showModelTable()" title="Back" class="back-control">Back on list</button>
+        </div>
+    </div>
+
+    <!-- deletemodel -->
+
+    <div ng-if="vm.showModelDetails" class="form-horizontal">
+        <dl class="dl-horizontal">
+            <dt>ModelName</dt>
+            <dd>{{vm.model.ModelName}}</dd>
+
+            <dt>ModelAbrv</dt>
+            <dd>{{vm.modelAbrv}}</dd>
+
+        </dl>
+
+        <button ng-click="vm.deleteModel(vm.item)" title="Delete" class="button-control">Delete</button>
+        | <button ng-click="vm.showModelTable()" title="Back" class="back-control">Back on list</button>
+
+    </div>
+
+</div>
