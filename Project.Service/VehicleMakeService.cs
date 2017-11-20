@@ -15,34 +15,41 @@ namespace Project.Service
 
         protected IVehicleMakeRepository Repository { get; private set; }
 
-        public VehicleMakeService(IVehicleMakeRepository repository)
+        public  VehicleMakeService(IVehicleMakeRepository repository)
         {
             this.Repository = repository;
         }
 
-        public Task<IEnumerable<IVehicleMake>> GetAsync(IFilter filter = null)
+        public virtual async Task<IEnumerable<IVehicleMake>> GetAsync(Filter filter = null)
         {
-            return Repository.GetAsync();
+            var vehiclemake = await Repository.GetAsync();
+
+            vehiclemake.OrderBy(m => m.MakeName)
+                .Skip((filter.Page - 1) * filter.PageSize)
+                .Take(filter.PageSize)
+                .ToList();
+
+            return await Repository.GetAsync();
         }
 
-        public Task<IVehicleMake> GetByMakeIDAsync(Guid MakeID)
+        public virtual async Task<IVehicleMake> GetByMakeIDAsync(Guid MakeID)
         {
-            return Repository.GetByMakeIDAsync(MakeID);
+            return await Repository.GetByMakeIDAsync(MakeID);
         }
 
-        public Task<int> AddAsync(IVehicleMake vehiclemake)
+        public virtual async Task<int> AddAsync(IVehicleMake vehiclemake)
         {
-            return Repository.AddAsync(vehiclemake);
+            return await Repository.AddAsync(vehiclemake);
         } 
 
-        public Task<int> UpdateAsync(IVehicleMake vehiclemake)
+        public virtual async Task<int> UpdateAsync(IVehicleMake vehiclemake)
         {
-            return Repository.UpdateAsync(vehiclemake);
+            return await Repository.UpdateAsync(vehiclemake);
         }
 
-        public Task<int> DeleteAsync(Guid MakeID)
+        public virtual async Task<int> DeleteAsync(Guid MakeID)
         {
-            return Repository.DeleteAsync(MakeID);
+            return await Repository.DeleteAsync(MakeID);
         }
     }
 }

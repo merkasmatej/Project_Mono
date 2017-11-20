@@ -1,0 +1,17 @@
+﻿<div ng-controller="makeController" ng-init="getAllMake()">
+    <form role="form" name="modelAddForm" ng-controller="modelAddController">
+        <div class="form-group">
+            <input type="text" class="form-control" id="name" ng-model="Name" placeholder="Name" />
+        </div>
+        <div class="form-group">
+            <input type="text" class="form-control" id="abrv" ng-model="Abrv" placeholder="Abrv" />
+        </div>
+        <div class="form-group">
+            <label for="select1">Select maker</label>
+            <select class="form-control" id="select1" ng-model="VehicleMakeId">
+                <option ng-repeat="option in data" value="{{option.VehicleMakeId}}">{{option.Name}}</option>
+            </select>
+        </div>
+        <button type="submit" class="btn btn-default" ng-click="AddModel()">Add</button>
+    </form>
+</div>

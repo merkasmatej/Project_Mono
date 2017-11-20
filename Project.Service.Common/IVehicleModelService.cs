@@ -10,10 +10,10 @@ namespace Project.Service.Common
 {
    public interface IVehicleModelService
     {
-        Task<IEnumerable<IVehicleModel>> GetAsync(IFilter filter = null;);
+        Task<IEnumerable<IVehicleModel>> GetAsync(Filter filter = null);
         Task<IVehicleModel> GetByModelIDAsync(Guid ModelID);
-        Task<int> AddAsync(IVehicleModel vehiclemodel);
-        Task<int> UpdateAsync(IVehicleModel vehiclemodel);
+        Task<int> AddAsync(Guid makeID, Guid modelID, string modelName, string modelAbrv);
+        Task<int> UpdateAsync(Guid makeID, Guid modelID, string modelName, string modelAbrv);
         Task<int> DeleteAsync(Guid ModelID);
     }
 }

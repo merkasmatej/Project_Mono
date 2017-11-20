@@ -10,5 +10,7 @@ namespace Project.WebAPI.ViewModels
         public Guid MakeID { get; set; }
         public string MakeName { get; set; }
         public string MakeAbrv { get; set; }
+
+        public ICollection<VehicleModelViewModel> VehicleModel { get; set; }
     }
 }

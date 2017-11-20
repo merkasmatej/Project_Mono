@@ -1,0 +1,20 @@
+﻿<div ng-controller="modelDetailsController">
+
+    <h3>Model</h3>
+    <table class="table">
+        <tr>
+            <th>Id</th>
+            <th>Name</th>
+            <th>Abrv</th>
+            <th>Make Id</th>
+            <th>Make Name</th>
+        </tr>
+        <tr>
+            <td>{{model.VehicleModelId}}</td>
+            <td>{{model.Name}}</td>
+            <td>{{model.Abrv}}</td>
+            <td>{{model.VehicleMakeId}}</td>
+            <td>{{model.VehicleMake.Name}}</td>
+        </tr>
+    </table>
+</div>

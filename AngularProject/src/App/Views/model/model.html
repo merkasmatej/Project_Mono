@@ -1,0 +1,51 @@
+﻿<div ng-controller="modelController" ng-init="getAllModels()">
+    <div class="container">
+
+        <div class="form-inline">
+            <div class="form-group pull-right">
+                <label>Search</label>
+                <input type="text" ng-model="search" class="form-control" placeholder="Search" />
+            </div>
+        </div>
+
+        <br />
+        <a href="#/model/AddModel" class="button pull-left">Add</a>
+        <table class="table table-hover" id="modelsTable">
+            <thead>
+                <tr>
+                    <th ng-click="sort('Name')">
+                        Name
+                        <span class="glyphicon sort-icon" ng-show="sortKey=='Name'" ng-class="{'glyphicon-chevron-up':reverse,'glyphicon-chevron-down':!reverse}"></span>
+                    </th>
+                    <th ng-click="sort('Abrv')">
+                        Abrv
+                        <span class="glyphicon sort-icon" ng-show="sortKey=='Abrv'" ng-class="{'glyphicon-chevron-up':reverse,'glyphicon-chevron-down':!reverse}"></span>
+                    </th>
+                    <th ng-click="sort('VehicleMake.Name')">
+                        Maker
+                        <span class="glyphicon sort-icon" ng-show="sortKey=='VehicleMake.Name'" ng-class="{'glyphicon-chevron-up':reverse,'glyphicon-chevron-down':!reverse}"></span>
+                    </th>
+                    <th></th>
+                </tr>
+            </thead>
+
+            <tbody>
+                <tr dir-paginate="item in dataModel|filter:search|orderBy:sortKey:reverse|itemsPerPage:5">
+                    <td>{{item.Name}}</td>
+                    <td>{{item.Abrv}}</td>
+                    <td>{{item.VehicleMake.Name}}</td>
+                    <td>
+                        <a href="#/model/details/{{item.VehicleModelId}}" class="button">Details</a>
+                        <a ng-controller="modelUpdateController" href="#/model/UpdateModel/{{item.VehicleModelId}}" class="button">Update</a>
+                        <a ng-controller="modelDeleteController" ng-href="#/model" ng-click='delete(item.VehicleModelId)' class="button">Delete</a>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+        <dir-pagination-controls max-size="5"
+                                 direction-links="true"
+                                 boundary-links="true">
+        </dir-pagination-controls>
+    </div>
+
+</div>

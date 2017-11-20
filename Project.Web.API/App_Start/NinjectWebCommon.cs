@@ -12,13 +12,10 @@ namespace Project.WebAPI.App_Start
     using Ninject.Web.Common;
     using Project.Service.Common;
     using Project.Service;
-    using Project.Repository.Common;
-    using Project.Repository;
     using Ninject.Web.WebApi;
     using Project.Model.Common;
     using Project.Model;
     using System.Data.Entity;
-    using Project.DAL;
     using System.Linq;
     using System.Web.Http;
 
@@ -79,16 +76,7 @@ namespace Project.WebAPI.App_Start
         /// <param name="kernel">The kernel.</param>
         private static void RegisterServices(IKernel kernel)
         {
-            kernel.Bind<IVehicleMakeService>().To<VehicleMakeService>();
-            kernel.Bind<IVehicleMakeRepository>().To<VehicleMakeRepository>();
-            kernel.Bind<IRepository>().To<Repository>();
-            kernel.Bind<IVehicleMake>().To<VehicleMake>();
-            kernel.Bind<IUnitOfWork>().To<UnitOfWork>();
-            kernel.Bind<IUnitOfWorkCreating>().ToCreating();
-                
-            kernel.Bind<IVehicleModelService>().To<VehicleModelService>();
-            kernel.Bind<IVehicleModelRepository>().To<VehicleModelRepository>();
-            kernel.Bind<IVehicleModel>().To<VehicleModel>();
+            
            
             
         }        

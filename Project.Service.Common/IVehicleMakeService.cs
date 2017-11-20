@@ -11,7 +11,7 @@ namespace Project.Service.Common
 {
    public interface IVehicleMakeService
     {
-        Task<IEnumerable<IVehicleMake>> GetAsync(IFilter filter = null);
+        Task<IEnumerable<IVehicleMake>> GetAsync(Filter filter = null);
         Task<IVehicleMake> GetByMakeIDAsync(Guid MakeID);
         Task<int> AddAsync(IVehicleMake vehiclemake);
         Task<int> UpdateAsync(IVehicleMake vehiclemake);

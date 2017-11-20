@@ -1,0 +1,33 @@
+﻿<div ng-controller="makeDetailsController">
+
+    <h3>Maker</h3>
+    <table class="table">
+        <tr>
+            <th>Id</th>
+            <th>Name</th>
+            <th>Abrv</th>
+        </tr>
+        <tr>
+            <td>{{make.VehicleMakeId}}</td>
+            <td>{{make.Name}}</td>
+            <td>{{make.Abrv}}</td>
+        </tr>
+    </table>
+
+    <br /><br />
+
+    <h3>Models</h3>
+    <table class="table">
+        <tr>
+            <th>Id</th>
+            <th>Name</th>
+            <th>Abrv</th>
+        </tr>
+        <tr ng-repeat="item in make.VehicleModel">
+            <td>{{item.VehicleModelId}}</td>
+            <td>{{item.Name}}</td>
+            <td>{{item.Abrv}}</td>
+        </tr>
+    </table>
+
+</div>

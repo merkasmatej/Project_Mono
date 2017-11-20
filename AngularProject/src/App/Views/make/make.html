@@ -1,0 +1,42 @@
+﻿<div ng-controller="makeController" ng-init="getAllMake()">
+
+    <div class="form-inline">
+        <div class="form-group pull-right">
+            <label>Search</label>
+            <input type="text" ng-model="search" class="form-control" placeholder="Search" />
+        </div>
+    </div>
+
+    <a href="#/make/AddMake" class="button">Add</a>
+    <table class="table">
+
+        <tr>
+            <th ng-click="sort('Name')">
+                Name
+                <span class="glyphicon sort-icon" ng-show="sortKey=='Name'" ng-class="{'glyphicon-chevron-up':reverse,'glyphicon-chevron-down':!reverse}"></span>
+            </th>
+            <th ng-click="sort('Abrv')">
+                Abrv
+                <span class="glyphicon sort-icon" ng-show="sortKey=='Abrv'" ng-class="{'glyphicon-chevron-up':reverse,'glyphicon-chevron-down':!reverse}"></span>
+            </th>
+            <th></th>
+        </tr>
+
+        <tbody dir-paginate="item in data|filter:search|orderBy:sortKey:reverse|itemsPerPage:5">
+            <tr>
+                <td>{{item.Name}}</td>
+                <td>{{item.Abrv}}</td>
+                <td>
+                    <a href="#/make/ShowDetailsMake/{{item.VehicleMakeId}}" class="button">Details</a>
+                    <a ng-controller="makeUpdateController" ng-href="#/make/UpdateMake/{{item.VehicleMakeId}}" class="button">Update</a>
+                    <a ng-controller="makeDeleteController" ng-href="#/make" ng-click='delete(item.VehicleMakeId)' class="button">Delete</a>
+                </td>
+            </tr>
+        </tbody>
+
+    </table>
+    <dir-pagination-controls max-size="5"
+                             direction-links="true"
+                             boundary-links="true">
+    </dir-pagination-controls>
+</div>

@@ -7,6 +7,10 @@ using Project.Model.Common;
 using Project.Repository.Common;
 using Project.Service.Common;
 using Project.Common;
+using Project.Model;
+using System.Collections;
+using AutoMapper;
+using System.Data.Entity;
 
 namespace Project.Service
 {
@@ -16,30 +20,90 @@ namespace Project.Service
 
         public VehicleModelService(IVehicleModelRepository repository)
         {
+            
             this.Repository = repository;
         }
 
-        public Task<IEnumerable<IVehicleModel>> GetAsync(IFilter filter = null)
+        public virtual async Task<IEnumerable<IVehicleModel>> GetAsync(Filter filter = null)
         {
-            return Repository.GetAsync();
+            var vehiclemodel = await Repository.GetAsync();
+
+            vehiclemodel.OrderBy(m => m.ModelName)
+                 .Skip((filter.Page - 1) * filter.PageSize)
+                 .Take(filter.PageSize)
+                 .ToList();
+
+            return await Repository.GetAsync();
+
+            
+
         }
 
-        public Task<IVehicleModel> GetByModelIDAsync(Guid ModelID)
+        public virtual async Task<IVehicleModel> GetByModelIDAsync(Guid ModelID)
         {
-            return Repository.GetByModelIDAsync(ModelID);
+            if (ModelID == Guid.Empty)
+            {
+                return null;
+
+            }
+
+            return await Repository.GetByModelIDAsync(ModelID);
         }
 
-        public Task<int> AddAsync(IVehicleModel vehiclemodel)
+        public virtual async Task<int> AddAsync(Guid makeID, Guid modelID, string modelName, string modelAbrv)
         {
-            return Repository.AddAsync(vehiclemodel);
+            if (modelName == null)
+                return -1;
+
+            if (modelAbrv == null)
+                return -2;
+
+            if (makeID == Guid.Empty)
+                return -3;
+
+            if (modelID == Guid.Empty)
+                return -4;
+
+
+            VehicleModel vehiclemodel = new VehicleModel
+            {
+                MakeID = makeID,
+                ModelID = modelID,
+                ModelName = modelName,
+                ModelAbrv = modelAbrv
+            };
+           
+            return await Repository.AddAsync(vehiclemodel);
         }
 
-        public Task<int> UpdateAsync(IVehicleModel vehiclemodel)
+        public virtual async Task<int> UpdateAsync(Guid makeID, Guid modelID, string modelName, string modelAbrv)
         {
-            return Repository.UpdateAsync(vehiclemodel);
+            var vehiclemodel = await Repository.GetByModelIDAsync(modelID);
+
+            if (modelName == null)
+                return -1;
+
+            if (modelAbrv == null)
+                return -2;
+
+            if (makeID == Guid.Empty)
+                return -3;
+
+            if (modelID == Guid.Empty)
+                return -4;
+
+            vehiclemodel.MakeID = makeID;
+            vehiclemodel.ModelID = modelID;
+            vehiclemodel.ModelName = modelName;
+            vehiclemodel.ModelAbrv = modelAbrv;
+            //TODO...
+
+
+
+            return await Repository.UpdateAsync(vehiclemodel);
         }
 
-        public Task<int> DeleteAsync(Guid ModelID)
+        public virtual Task<int> DeleteAsync(Guid ModelID)
         {
             return Repository.DeleteAsync(ModelID);
         }

@@ -10,52 +10,49 @@ using Project.Model;
 using Project.Common;
 using AutoMapper;
 using Project.WebAPI.ViewModels;
-using Project.Service;
+
 
 namespace Project.WebAPI.Controllers
 {
+    [RoutePrefix("api/model")]
+
     public class VehicleModelController : ApiController
     {
-        protected IVehicleModelService Service { get; private set; }
+        protected IVehicleModelService ModelService { get; private set; }
+        protected IVehicleMakeService MakeService { get; private set; }
 
 
-        public VehicleModelController(IVehicleModelService service)
+        public VehicleModelController(IVehicleModelService modelService, IVehicleMakeService makeService)
         {
-            this.Service = service;
+            this.ModelService = modelService;
+            this.MakeService = makeService;
         }
         
         
         /// <summary>
         /// gets all models
         /// </summary>
-        /// <param name="searchString"></param>
-        /// <param name="pageNumber"></param>
-        /// <param name="pageSize"></param>
         /// <returns></returns>
         [HttpGet]
+        [Route("getall")]
 
-        public async Task<HttpResponseMessage> Get(string searchString ="", int pageNumber = 0, int pageSize = 0)
+        public async Task<HttpResponseMessage> Get()
         {
             try
             {
-                var result = await Service.GetAsync(new Filter(searchString, pageNumber, pageSize));
-                if (result != null)
-                {
-                    return Request.CreateResponse(HttpStatusCode.OK,
-                        Mapper.Map<List<VehicleModelViewModel>>(result));
-                }
-                else
-                {
-                    return Request.CreateResponse(HttpStatusCode.NotFound);
-                }
+                var response = Mapper.Map<IEnumerable<VehicleModelViewModel>>(await ModelService.GetAsync());
 
+                return Request.CreateResponse(HttpStatusCode.OK, response);
             }
-            catch (Exception e)
+            catch 
             {
 
-                return Request.CreateResponse(HttpStatusCode.BadRequest, e.ToString());
+                return Request.CreateErrorResponse(HttpStatusCode.InternalServerError, "Couldn't get data, database error");
             }
         }
+
+        
+        
 
         /// <summary>
         /// Get the model by id
@@ -63,62 +60,63 @@ namespace Project.WebAPI.Controllers
         /// <param name="ModelID"></param>
         /// <returns></returns>
         [HttpGet]
+        [Route("get")]
+
         public async Task<HttpResponseMessage> GetByID(Guid ModelID)
         {
             try
             {
-                var result = await Service.GetByModelIDAsync(ModelID);
-                if(result != null)
-                {
-                    return Request.CreateResponse(HttpStatusCode.OK,
-                        Mapper.Map<VehicleModelViewModel>(result));
-                }
-                else
-                {
-                    return Request.CreateResponse(HttpStatusCode.NotFound);
-                }
+                var response = Mapper.Map<VehicleModelViewModel>(await ModelService.GetByModelIDAsync(ModelID));
+                if(response == null)
 
+                    return Request.CreateErrorResponse(HttpStatusCode.InternalServerError, "Bad id");
+                return Request.CreateResponse(HttpStatusCode.OK, response);
+                
             }
-            catch (Exception e)
+            catch 
             {
+                return Request.CreateErrorResponse(HttpStatusCode.InternalServerError, "Couldn't get data, database error");
 
-                return Request.CreateResponse(HttpStatusCode.BadRequest, e.ToString());
             }
         }
 
         /// <summary>
         /// Add new model
         /// </summary>
-        /// <param name="entity"></param>
+        /// <param name="model"></param>
         /// <returns></returns>
         [HttpPost]
+        [Route("add")]
+
         public async Task<HttpResponseMessage> Add(VehicleModelViewModel model)
         {
             try
             {
-                var vehiclemodel = new VehicleModelViewModel()
-                {
-                    ModelName = model.ModelName,
-                    ModelAbrv = model.ModelAbrv
+                if (model.ModelName == null || model.ModelAbrv == null || model.MakeID == null)
+                    return Request.CreateErrorResponse(HttpStatusCode.BadRequest, "model is not complete, please provide name, abrv and make id");
 
-                };
+                var IfMakeExist = await MakeService.GetByMakeIDAsync(model.MakeID);
 
-                var result = await Service.AddAsync(Mapper.Map<VehicleModel>(model));
-                if(result == 1)
-                {
-                    return Request.CreateResponse(HttpStatusCode.OK, model);
-                }
-                else
-                {
-                    return Request.CreateResponse(HttpStatusCode.InternalServerError,"Failed");
-                }
+                if (IfMakeExist == null)
+                    return Request.CreateErrorResponse(HttpStatusCode.NotFound, "invalid MakeID");
+
+                model.ModelID = Guid.NewGuid();
+                model.MakeID = Guid.NewGuid();
+                model.ModelName = null;
+                model.ModelAbrv = null;
+
+                var response = await ModelService.AddAsync(model.MakeID, model.ModelID, model.ModelName, model.ModelAbrv);
+
+                return Request.CreateResponse(HttpStatusCode.OK, response);
             }
-            catch (Exception e)
+            catch 
             {
 
-                return Request.CreateResponse(HttpStatusCode.BadRequest, e.ToString());
+                return Request.CreateErrorResponse(HttpStatusCode.InternalServerError, "couldn't add model, database error");
             }
         }
+
+       
 
         /// <summary>
         /// update model
@@ -127,26 +125,30 @@ namespace Project.WebAPI.Controllers
         /// <param name="entity"></param>
         /// <returns></returns>
         [HttpPut]
-        public async Task<HttpResponseMessage> Update(Guid ModelID, VehicleModelViewModel entity)
+        [Route("update")]
+
+        public async Task<HttpResponseMessage> Update(VehicleModelViewModel model)
         {
             try
             {
-                var vehiclemodel = await Service.GetByModelIDAsync(ModelID);
-                vehiclemodel.ModelName = entity.ModelName;
-                if(vehiclemodel != null) { 
+                var toBeUpdated = await ModelService.GetByModelIDAsync(model.ModelID);
 
-                var result = await Service.UpdateAsync(Mapper.Map<VehicleModel>(entity));
-                return Request.CreateResponse(HttpStatusCode.OK, entity);
-                }
-                else
-                {
-                    return Request.CreateResponse(HttpStatusCode.NotFound);
-                }
+                if (model.ModelName != null)
+                    toBeUpdated.ModelName = model.ModelName;
+
+                if (model.ModelAbrv != null)
+                    toBeUpdated.ModelAbrv = model.ModelAbrv;
+
+                var response = await ModelService.UpdateAsync(model.MakeID, model.ModelID, model.ModelName, model.ModelAbrv);
+                if (response == 0)
+                    return Request.CreateErrorResponse(HttpStatusCode.InternalServerError, "couldn't update model");
+
+                return Request.CreateResponse(HttpStatusCode.OK, response);
             }
-            catch (Exception e)
+            catch 
             {
 
-                return Request.CreateResponse(HttpStatusCode.BadRequest, e.ToString());
+                return Request.CreateErrorResponse(HttpStatusCode.InternalServerError, "couldn't update model. database error");
             }
         }
 
@@ -156,25 +158,23 @@ namespace Project.WebAPI.Controllers
         /// <param name="ModelID"></param>
         /// <returns></returns>
         [HttpDelete]
+        [Route("delete")]
+
         public async Task<HttpResponseMessage> Delete(Guid ModelID)
         {
             try
             {
-                var vehiclemodel = await Service.GetByModelIDAsync(ModelID);
-                if(vehiclemodel != null)
-                {
-                    var result = await Service.DeleteAsync(ModelID);
-                    return Request.CreateResponse(HttpStatusCode.OK, "Deleted");
-                }
-                else
-                {
-                    return Request.CreateResponse(HttpStatusCode.NotFound);
-                }
+                var response = await ModelService.DeleteAsync(ModelID);
+
+                if (response == 0)
+                    return Request.CreateErrorResponse(HttpStatusCode.InternalServerError, "couldn't delete model");
+
+                return Request.CreateResponse(HttpStatusCode.OK, response);
             }
-            catch (Exception e)
+            catch 
             {
 
-                return Request.CreateResponse(HttpStatusCode.BadRequest, e.ToString());
+                return Request.CreateResponse(HttpStatusCode.InternalServerError, "couldn't delete model. database error");
             }
         }
 
